@@ -28,22 +28,22 @@ module {
 // CHECK:    %[[C2048_I64:.*]] = arith.constant 2048 : i64
 // CHECK:    %[[CST:.*]] = arith.constant dense<[1, 32]> : tensor<2xi64>
 // CHECK:    %[[C32_I32:.*]] = arith.constant 32 : i32
-// CHECK:    %[[VAR_0:.*]] = arith.muli %arg5, %[[C32_I32:.*]] : i32
-// CHECK:    %[[VAR_1:.*]] = arith.index_cast %[[VAR_0:.*]] : i32 to index
-// CHECK:    %[[REINTERPRET_CAST:.*]] = memref.reinterpret_cast %arg0 to offset: [%[[VAR_1:.*]]], sizes: [32], strides: [1] : memref<*xf32> to memref<32xf32, strided<[1], offset: ?>>
+// CHECK:    %[[VAR_0:.*]] = arith.muli %arg5, %[[C32_I32]] : i32
+// CHECK:    %[[VAR_1:.*]] = arith.index_cast %[[VAR_0]] : i32 to index
+// CHECK:    %[[REINTERPRET_CAST:.*]] = memref.reinterpret_cast %arg0 to offset: [%[[VAR_1]]], sizes: [32], strides: [1] : memref<*xf32> to memref<32xf32, strided<[1], offset: ?>>
 // CHECK:    %[[ALLOC:.*]] = memref.alloc() : memref<32xf32>
-// CHECK:    memref.copy %[[REINTERPRET_CAST:.*]], %[[ALLOC:.*]] : memref<32xf32, strided<[1], offset: ?>> to memref<32xf32>
-// CHECK:    %[[VAR_2:.*]] = bufferization.to_tensor %[[ALLOC:.*]] restrict writable : memref<32xf32>
-// CHECK:    %[[RESHAPE:.*]] = tensor.reshape %[[VAR_2:.*]](%[[CST:.*]]) : (tensor<32xf32>, tensor<2xi64>) -> tensor<1x32xf32>
+// CHECK:    memref.copy %[[REINTERPRET_CAST:.*]], %[[ALLOC]] : memref<32xf32, strided<[1], offset: ?>> to memref<32xf32>
+// CHECK:    %[[VAR_2:.*]] = bufferization.to_tensor %[[ALLOC]] restrict writable : memref<32xf32>
+// CHECK:    %[[RESHAPE:.*]] = tensor.reshape %[[VAR_2]](%[[CST]]) : (tensor<32xf32>, tensor<2xi64>) -> tensor<1x32xf32>
 // CHECK:    %[[VAR_3:.*]] = tensor.empty() : tensor<64x32xf32>
-// CHECK:    %[[VAR_4:.*]] = linalg.generic {indexing_maps = [#map, #map1], iterator_types = ["parallel", "parallel"]} ins(%[[RESHAPE:.*]] : tensor<1x32xf32>) outs(%[[VAR_3:.*]] : tensor<64x32xf32>) attrs =  {broadcastDims = array<i64: 0>} {
+// CHECK:    %[[VAR_4:.*]] = linalg.generic {indexing_maps = [#map, #map1], iterator_types = ["parallel", "parallel"]} ins(%[[RESHAPE]] : tensor<1x32xf32>) outs(%[[VAR_3:.*]] : tensor<64x32xf32>) attrs =  {broadcastDims = array<i64: 0>} {
 // CHECK:    ^bb0(%in: f32, %out: f32):
 // CHECK:      linalg.yield %in : f32
 // CHECK:    } -> tensor<64x32xf32>
 // CHECK:    %[[VAR_5:.*]] = tensor.empty() : tensor<1xi64>
-// CHECK:    %[[VAR_6:.*]] = linalg.fill ins(%[[C2048_I64:.*]] : i64) outs(%[[VAR_5:.*]] : tensor<1xi64>) -> tensor<1xi64>
-// CHECK:    %reshape_0 = tensor.reshape %[[VAR_4:.*]](%[[VAR_6:.*]]) : (tensor<64x32xf32>, tensor<1xi64>) -> tensor<2048xf32>
-// CHECK:    %[[VAR_7:.*]] = arith.index_cast %[[VAR_0:.*]] : i32 to index
-// CHECK:    %[[REINTERPRET_CAST_1:.*]] = memref.reinterpret_cast %arg1 to offset: [%[[VAR_7:.*]]], sizes: [2048], strides: [1] : memref<*xf32> to memref<2048xf32, strided<[1], offset: ?>>
-// CHECK:    bufferization.materialize_in_destination %reshape_0 in writable %[[REINTERPRET_CAST_1:.*]] : (tensor<2048xf32>, memref<2048xf32, strided<[1], offset: ?>>) -> ()
+// CHECK:    %[[VAR_6:.*]] = linalg.fill ins(%[[C2048_I64]] : i64) outs(%[[VAR_5]] : tensor<1xi64>) -> tensor<1xi64>
+// CHECK:    %[[RESHAPE_0:.*]] = tensor.reshape %[[VAR_4]](%[[VAR_6]]) : (tensor<64x32xf32>, tensor<1xi64>) -> tensor<2048xf32>
+// CHECK:    %[[VAR_7:.*]] = arith.index_cast %[[VAR_0]] : i32 to index
+// CHECK:    %[[REINTERPRET_CAST_1:.*]] = memref.reinterpret_cast %arg1 to offset: [%[[VAR_7]]], sizes: [2048], strides: [1] : memref<*xf32> to memref<2048xf32, strided<[1], offset: ?>>
+// CHECK:    bufferization.materialize_in_destination %[[RESHAPE_0]] in writable %[[REINTERPRET_CAST_1]] : (tensor<2048xf32>, memref<2048xf32, strided<[1], offset: ?>>) -> ()
 // CHECK:    return
